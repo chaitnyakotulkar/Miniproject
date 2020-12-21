@@ -1,0 +1,29 @@
+	
+	.header {
+ 
+  
+  background: #1abc9c;
+  color: white;
+  height:70px;
+  font-size:20px;
+}
+#right-nav{
+	
+	float:right;
+	
+}
+#right-nav li{
+	
+	display:inline-block;
+	margin:10px;
+}
+#left-nav{
+	float:left;
+	
+}
+ul li{
+	list-style-type:none;
+		
+	
+}
+	
