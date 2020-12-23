@@ -1,92 +1,58 @@
-<html>
-<head>
 <?php
-session_start();
-?>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">
-</head>
-<body>
-<?php
-
-include('connect.php');
-$name=$_POST['firstname'];
-$_SESSION['name']="$name";
-$password=$_POST['password'];
-$password1= md5($password);
-$_SESSION['pass']="$password1";
-
-// $pass=$_POST['password'];
-// $_SESSION['pass']="$pass";
-// $password1= md5($password);
-// $_SESSION['pass']="$password1";
-
-$dup="select * from login_details where firstname='$name' && password='$password1'";
-
-$result=mysqli_query($conn,$dup);
-
-$num=mysqli_num_rows($result);
-if($num==1)
-{
-	
-	?>
-	<script>
-
-		
-swal({
-  title: "logged in!",
-  text: "log in successfully .",
-  type: "success",
-  timer: 2000,
-  showConfirmButton: false
-}, function(){
-	
-      	window.location.href="login-details.php";
-});
-
-
-	</script>
-	
-	<?php
-
+$servername = "localhost";
+$username = "padmin";
+$password = "root";
+$dbname = "RegistrationDb";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+	die("Connection failed: " . $conn->connect_error);
 }
-else{
-	?>
-		<script>
-
-		
-swal({
-  title: "Error!",
-  text: "please verify username and password .",
-  type: "error",
-  timer: 2000,
-  showConfirmButton: false
-}, function(){
-	
-      	window.location.href="login.php";
-});
-
-
-	</script>
-	<?php
+session_start(); 
+if (isset($_POST['email']) && isset($_POST['password'])) {
+	function validate($data){
+		$data = trim($data);
+		$data = stripslashes($data);
+		$data = htmlspecialchars($data);
+		return $data;
+	}
+	$uname = validate($_POST['email']);
+	$pass = validate($_POST['password']);
+	if (empty($uname)) {
+		header("Location: loginForm.php?error=User Name is required");
+		exit();
+	}else if(empty($pass)){
+		header("Location: loginForm.php?error=Password is required");
+		exit();
+	}else{
+		$sql = "SELECT * FROM Userdata WHERE email='$uname' AND password='$pass'";
+		$result = mysqli_query($conn, $sql);
+		if (mysqli_num_rows($result) === 1) {
+			$row = mysqli_fetch_assoc($result);
+			if ($row['email'] === $uname && $row['password'] === $pass) {
+				$_SESSION['emailid'] = $row['email'];
+				$_SESSION['password'] = $row['password'];
+				$_SESSION['firstname'] = $row['firstname'];
+				$_SESSION['lastname'] = $row['lastname'];
+				$_SESSION['image'] = $row['image'];
+				header("Location: home.php");
+				exit();
+			}else{
+				header("Location: loginForm.php?error=Incorect User name or password");
+				exit();
+			}
+		}else{
+			header("Location: loginForm.php?error=Incorect User name or password");
+			exit();
+		}
+	}
+}else{
+	header("Location: loginForm.php");
+	exit();
 }
 
 
 
 
-	
-	?>
-	
-	<?php
-//header('Location:sign-up.php');
 
-
-
-?>
-
-	<?php
-	
-	
-?>
-</body>
-</html>
